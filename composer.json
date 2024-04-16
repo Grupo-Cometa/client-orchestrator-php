@@ -1,0 +1,21 @@
+{
+    "name": "grupo-cometa/client-orchestrator",
+    "description": "Integração com orquestrador, log, agendamentos e monitoramento",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "GrupoCometa\\ClientOrchestrator\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Geraldo Lucas Mota de Oliveira"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "illuminate/console": "^11.4",
+        "illuminate/support": "^11.4",
+        "guzzlehttp/guzzle": "^7.8"
+    }
+}
