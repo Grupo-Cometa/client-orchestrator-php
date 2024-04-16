@@ -12,8 +12,10 @@ class Bootstrap  extends Command
     protected $signature = 'orchestrator:bootstrap';
     protected $description = 'Cria supervisor';
 
+    private $filenameSupervisor = '/etc/supervisor/conf.d/supervisor.conf';
     public function handle()
     {
+        $this->initFileSupervisor();
         $automation = new Automation;
         foreach ($automation->allNamespaces() as $classAutomation) {
             $instanceAutomation = new $classAutomation;
@@ -33,9 +35,23 @@ class Bootstrap  extends Command
         shell_exec("supervisorctl restart consume-schedules-$publicId");
     }
 
+    private function initFileSupervisor()
+    {
+        if (!is_dir('/var/log/automation/')) mkdir('/var/log/automation/', 0667, true);
+        if (!file_exists($this->filenameSupervisor)) file_put_contents($this->filenameSupervisor, '');
+
+        $currentContent = file_get_contents($this->filenameSupervisor);
+        $exists = preg_match_all('/\[supervisord\]/', $currentContent, $matchs);
+        if ($exists) return;
+
+        $template = file_get_contents(__DIR__ . "/../templates/header");
+        $newContent = $template . PHP_EOL . $currentContent;
+        file_put_contents($this->filenameSupervisor, $newContent);
+    }
+
     private function appendSupervisor($bindTemplate)
     {
-        if ($handle = fopen('/etc/supervisor/conf.d/supervisor.conf', 'a')) {
+        if ($handle = fopen($this->filenameSupervisor, 'a')) {
             fwrite($handle, PHP_EOL . PHP_EOL . $bindTemplate);
             fclose($handle);
         }
