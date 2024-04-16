@@ -6,6 +6,7 @@ class Installer
 {
     public static function checksDependencies()
     {
+
         $dependens = [
             'cron',
             'ps',
@@ -13,11 +14,19 @@ class Installer
             'supervisorctl'
         ];
 
+        $dependeNotIncludes = [];
         foreach ($dependens as  $depende) {
             exec("which $depende", $output, $returnVar);
+            ConsoleLog::warning("$depende, $returnVar");
             if ($returnVar !== 0) {
-                throw new \RuntimeException("O $depende não está instalado ou não está funcionando corretamente.");
+                $dependeNotIncludes[] = $depende;
             }
         }
+
+        if (!$dependeNotIncludes) return ConsoleLog::success("Todas dependencias instaladas com sucesso");
+
+        $strDependNotFound = implode(', ', $dependeNotIncludes);
+        ConsoleLog::error("Dependecias não localizadas [$strDependNotFound]");
+        exit(1);
     }
 }

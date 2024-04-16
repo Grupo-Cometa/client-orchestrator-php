@@ -3,7 +3,7 @@
     "description": "Integração com orquestrador, log, agendamentos e monitoramento",
     "type": "library",
     "scripts": {
-        "post-install-cmd": [
+        "pre-install-cmd": [
             "GrupoCometa\\ClientOrchestrator\\Installer::checksDependencies"
         ]
     },
