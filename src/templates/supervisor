@@ -2,14 +2,14 @@
 command=/usr/local/bin/php /var/www/artisan orchestrator:consume-schedules {{publicId}}
 autostart=true
 autorestart=true
-stdout_logfile=/var/log/laravel/client-orchestrator.log
-stderr_logfile=/var/log/laravel/client-orchestrator.err.log
+stdout_logfile=/var/log/automation/{{publicId}}.log
+stderr_logfile=/var/log/automation/{{publicId}}.err.log
 chown=root:root
 
 [program:publish-status-{{publicId}}]
 command=/usr/local/bin/php /var/www/artisan orchestrator:publish-status {{publicId}}
 autostart=true
 autorestart=true
-stdout_logfile=/var/log/laravel/client-orchestrator.log
-stderr_logfile=/var/log/laravel/client-orchestrator.err.log
+stdout_logfile=/var/log/automation/{{publicId}}.log
+stderr_logfile=/var/log/automation/{{publicId}}.err.log
 chown=root:root
