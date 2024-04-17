@@ -2,6 +2,7 @@
     "name": "grupo-cometa/client-orchestrator",
     "description": "Integração com orquestrador, log, agendamentos e monitoramento",
     "type": "library",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "pre-install-cmd": [
             "GrupoCometa\\ClientOrchestrator\\Installer::checksDependencies"
