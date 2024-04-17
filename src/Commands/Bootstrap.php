@@ -4,6 +4,7 @@ namespace GrupoCometa\ClientOrchestrator\Commands;
 
 use GrupoCometa\ClientOrchestrator\AbstractAutomation;
 use GrupoCometa\ClientOrchestrator\Automation;
+use GrupoCometa\ClientOrchestrator\ConsoleLog;
 use Illuminate\Console\Command;
 
 
@@ -13,6 +14,7 @@ class Bootstrap  extends Command
     protected $description = 'Cria supervisor';
 
     private $filenameSupervisor = '/etc/supervisor/conf.d/supervisor.conf';
+
     public function handle()
     {
         $this->initFileSupervisor();
@@ -21,10 +23,25 @@ class Bootstrap  extends Command
             $instanceAutomation = new $classAutomation;
             if (!($instanceAutomation instanceof AbstractAutomation)) continue;
 
+
             $bindTemplate = $this->bindTemplete($instanceAutomation->publicId());
+
+            if ($this->existsPublicId($instanceAutomation->publicId())) {
+                ConsoleLog::warning("PublicId [{$instanceAutomation->publicId()}] já existe em supervisor");
+                continue;
+            };
+
             $this->appendSupervisor($bindTemplate);
             $this->apply($instanceAutomation->publicId());
         }
+
+        $this->startSupervisor();
+    }
+
+    private function startSupervisor()
+    {
+        shell_exec('/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf');
+        shell_exec('service supervisor start');
     }
 
     private function apply($publicId)
@@ -55,6 +72,12 @@ class Bootstrap  extends Command
             fwrite($handle, PHP_EOL . PHP_EOL . $bindTemplate);
             fclose($handle);
         }
+    }
+
+    private function existsPublicId($publicId)
+    {
+        $currentContent = file_get_contents($this->filenameSupervisor);
+        return str_contains($currentContent, $publicId);
     }
 
     private function bindTemplete($publicId)
