@@ -3,16 +3,25 @@
 namespace GrupoCometa\ClientOrchestrator;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class CrontabScheduleManager
 {
     private $username;
     private $autoCommit;
+    private $folderLog = '/var/log/automation/';
 
     public function __construct($username = 'root', $autoCommit = true)
     {
         $this->username = $username;
         $this->autoCommit = $autoCommit;
+        $this->createFolderLog();
+    }
+
+    private function createFolderLog()
+    {
+        if (is_dir($this->folderLog)) return;
+        mkdir($this->folderLog, 0667);
     }
 
     public function getCronsText()
@@ -20,6 +29,7 @@ class CrontabScheduleManager
         try {
             return shell_exec("crontab -u {$this->username} -l");
         } catch (Exception $e) {
+            Log::error($e);
             return '';
         }
     }
@@ -41,7 +51,7 @@ class CrontabScheduleManager
     public function create(Schedule $schedule)
     {
         if ($this->existSchedule($schedule)) return;
-        if ($this->existCronExpression($schedule)) throw new Exception("A expressão cron ja existe para outro  agendamento");
+        if ($this->existCronExpression($schedule)) throw new Exception("A expressão cron ja existe para outro agendamento");
 
         $text = $this->getCronsText();
         $newTextCron = $text . $this->command($schedule);
@@ -56,8 +66,8 @@ class CrontabScheduleManager
 
     private function write($text)
     {
-        $baseTimezone = "TZ=America/Cuiaba\n";
-        if (!strpos($text, $baseTimezone)) $text = $baseTimezone . $text;
+        $baseTimezone = "TZ=America/Cuiaba";
+        if (!str_contains($text, $baseTimezone)) $text = $baseTimezone . PHP_EOL . $text;
 
         $exists = preg_match("/\n$/", $text);
 
@@ -75,7 +85,7 @@ class CrontabScheduleManager
 
     private function command(Schedule $schedule)
     {
-        return "{$schedule->cronExpression}  /usr/local/bin/php " . $this->getPathProject() . "/artisan orchestrator:automation-start {$schedule->robotPublicId} {$schedule->scheduleId} >> /var/log/cron.log 2>&1 #id={$schedule->scheduleId} \n";
+        return "{$schedule->cronExpression}  /usr/local/bin/php " . $this->getPathProject() . "/artisan orchestrator:automation-start {$schedule->robotPublicId} {$schedule->scheduleId} >> {$this->folderLog}{$schedule->robotPublicId}.log 2>&1 #id={$schedule->scheduleId} \n";
     }
 
     private function getPathProject()

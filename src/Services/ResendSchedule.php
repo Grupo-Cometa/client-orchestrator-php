@@ -3,6 +3,7 @@
 namespace GrupoCometa\ClientOrchestrator\Services;
 
 use GrupoCometa\ClientOrchestrator\Http\HttpOrchestrator;
+use Illuminate\Support\Facades\Log;
 
 class ResendSchedule
 {
@@ -10,8 +11,12 @@ class ResendSchedule
     {
         sleep(60);
 
-        $httpOrquestrator = new HttpOrchestrator;
-        $robotId = $httpOrquestrator->getRobotIdByPublicId($publicId);
-        $httpOrquestrator->resendSchedules($robotId);
+        try {
+            $httpOrquestrator = new HttpOrchestrator;
+            $robotId = $httpOrquestrator->getRobotIdByPublicId($publicId);
+            $httpOrquestrator->resendSchedules($robotId);
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
     }
 }
