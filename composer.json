@@ -20,8 +20,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "illuminate/console": ">=10",
-        "illuminate/support": ">=10",
+        "illuminate/console": ">=9",
+        "illuminate/support": ">=9",
         "guzzlehttp/guzzle": "^7.8",
         "php-amqplib/php-amqplib": "^3.6",
         "textalk/websocket": "^1.5"
