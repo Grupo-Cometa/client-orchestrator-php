@@ -74,6 +74,13 @@ return [
 ];
 
 ~~~
+
+Em projetos Lumen é necessário realizar o registro do seu config em **app/bootstrap/app.php** como na linha abaixo
+
+~~~php
+$app->configure('orchestrator');
+~~~
+
 ## Criando um Automation
 Para implementar uma automação que possa ser monitoradora pelo orquestrador basta criar um class em app\Orchestrator (diretório padrao, pode ser alterado add uma key 'namespace' =>  'App\MyBaseNamespace' no config conforme passo a cima) que extenda a abstract class **GrupoCometa\ClientOrchestrator\AbstractAutomation**
 Exemplo criado no diretorio padrão: app\Orchestrator\AutomationTeste.php
