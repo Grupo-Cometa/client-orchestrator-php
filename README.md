@@ -22,7 +22,7 @@ apt update && apt install -y cron supervisor procps
 Uma vez instalado as dependencias basta adicionar o lib ao seu projeto com **composer**.
 
 ~~~sh
-composer require grupocometa/client-orchestrator
+composer require grupo-cometa/client-orchestrator
 ~~~
 
 ## Registrando  commands.
