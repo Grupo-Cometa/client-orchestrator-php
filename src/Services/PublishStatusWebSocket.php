@@ -3,17 +3,16 @@
 namespace GrupoCometa\ClientOrchestrator\Services;
 
 use GrupoCometa\ClientOrchestrator\ConsoleLog;
-use GrupoCometa\ClientOrchestrator\WebSocketClient;
-use GrupoCometa\ClientOrchestrator\PrintConsole;
+use GrupoCometa\ClientOrchestrator\Ws\WsClient;
 
 class PublishStatusWebSocket
 {
     public static function run($publicId)
     {
         ConsoleLog::success("Publish status [$publicId] Start...");
-        $socket = new WebSocketClient;
+        $socket = new WsClient("status.$publicId");
         while (true) {
-            $socket->send("status.$publicId", [
+            $socket->send([
                 'inExecution' => self::inExecution($publicId),
                 'cpu' => self::cpu(),
                 'ram' => self::ram(),

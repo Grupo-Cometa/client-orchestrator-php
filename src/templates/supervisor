@@ -13,3 +13,11 @@ autorestart=true
 stdout_logfile=/var/log/automation/{{publicId}}.log
 stderr_logfile=/var/log/automation/{{publicId}}.err.log
 chown=root:root
+
+[program:listen-start-{{publicId}}]
+command=/usr/local/bin/php /var/www/artisan orchestrator:listen-start {{publicId}}
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/automation/{{publicId}}.log
+stderr_logfile=/var/log/automation/{{publicId}}.err.log
+chown=root:root

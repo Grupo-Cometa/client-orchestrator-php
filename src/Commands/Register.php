@@ -11,7 +11,8 @@ class Register
             AutomationStart::class,
             Bootstrap::class,
             ConsumerQueueScheduleCommand::class,
-            PublishStatusCommand::class
+            PublishStatusCommand::class,
+            ListenStartCommand::class
         ];
     }
 }

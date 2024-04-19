@@ -2,6 +2,10 @@
 
 namespace GrupoCometa\ClientOrchestrator;
 
+use GrupoCometa\ClientOrchestrator\Services\ExecutionAmqp;
+use Illuminate\Support\Facades\Log;
+use stdClass;
+
 class Automation
 {
     public function allNamespaces()
@@ -27,5 +31,22 @@ class Automation
 
             if ($instanceAutomation->publicId() == $publicId) return $instanceAutomation;
         }
+    }
+
+    public function start($publicId, $scheduleId = null, string|null $token = null, stdClass|null $parameters = null)
+    {
+        $instanceAutomation = $this->getInstanceByPublicId($publicId);
+
+        if (!$instanceAutomation) {
+            return Log::error(
+                "Class Automation não encontrada para o publicID $publicId, 
+                verificar se extends AbstractAutomation"
+            );
+        }
+
+        $executionAmqp = new ExecutionAmqp($instanceAutomation, $scheduleId, $token, $parameters);
+        $executionAmqp->start();
+        $instanceAutomation->start();
+        $executionAmqp->stop();
     }
 }
