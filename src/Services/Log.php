@@ -100,11 +100,11 @@ class Log
     private function formatContent($content)
     {
         if (is_string($content)) return $this->fileOrStr($content);
-
-        if (is_object($content)) return json_encode($content);
-
+ 
+        if (is_object($content) || is_array($content)) return json_encode($content);
+       
         if (is_resource($content)) return stream_get_contents($content);
-
+ 
         $type = gettype($content);
         return json_encode(['erro' => "tipo de arquivo não suportador [$type]"]);
     }
