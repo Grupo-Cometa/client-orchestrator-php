@@ -43,7 +43,7 @@ class ExecutionAmqp
             'status' => $status,
             'schedule_id' => $this->scheduleId,
             'parameters' =>  $this->getParameters(),
-            'token' => $this->token,
+            'token' => $this->token ?? '',
             'public_id' => $this->automation->publicId()
         ];
 
