@@ -27,7 +27,7 @@ class CrontabScheduleManager
     public function getCronsText()
     {
         try {
-            return shell_exec("crontab -u {$this->username} -l");
+            return shell_exec("crontab -u {$this->username} -l 2>&1");
         } catch (Exception $e) {
             Log::error($e);
             return '';
@@ -44,14 +44,16 @@ class CrontabScheduleManager
     private function existCronExpression(Schedule $schedule)
     {
         $text = $this->getCronsText();
-        $pattern = "/$schedule->cronExpression.*{$schedule->scheduleId}/i";
+        $pattern = "/" . preg_quote($schedule->cronExpression) . ".*{$schedule->scheduleId}/i";
         return preg_match($pattern, $text);
     }
 
     public function create(Schedule $schedule)
     {
         if ($this->existSchedule($schedule)) return;
-        if ($this->existCronExpression($schedule)) throw new Exception("A expressão cron ja existe para outro agendamento");
+        if ($this->existCronExpression($schedule)) {
+            throw new Exception("A expressão cron já existe para outro agendamento");
+        }
 
         $text = $this->getCronsText();
         $newTextCron = $text . $this->command($schedule);
@@ -60,18 +62,20 @@ class CrontabScheduleManager
         if ($this->autoCommit) $this->commit();
 
         if (!$this->existSchedule($schedule)) {
-            throw new Exception('erro ao gravar agendamento');
+            throw new Exception('Erro ao gravar agendamento');
         }
     }
 
     private function write($text)
     {
         $baseTimezone = "TZ=America/Cuiaba";
-        if (!str_contains($text, $baseTimezone)) $text = $baseTimezone . PHP_EOL . $text;
+        if (!str_contains($text, $baseTimezone)) {
+            $text = $baseTimezone . PHP_EOL . $text;
+        }
 
-        $exists = preg_match("/\n$/", $text);
-
-        if (!$exists) $text .= "\n";
+        if (!preg_match("/\n$/", $text)) {
+            $text .= "\n";
+        }
 
         file_put_contents('/tmp/cron.txt', $text);
 
