@@ -27,7 +27,7 @@ class CrontabScheduleManager
     public function getCronsText()
     {
         try {
-            return shell_exec("crontab -u {$this->username} -l 2>&1");
+            return shell_exec("crontab -u {$this->username} -l");
         } catch (Exception $e) {
             Log::error($e);
             return '';
