@@ -161,6 +161,19 @@ Por padrão o superviso não inicia com o sistema operacinal voce deve cuidar de
 Se tudo saiu como esperado sua aplicação  vai ficar online no orquestrador
 ![Imagem exemplo](aplication-orchestrator.png)
 
+## Variáveis de ambiente nos agendamentos
+
+O cron executa os jobs com o ambiente vazio, sem as variáveis do container (`AMQP_*`, `DB_*`, ...). Sem elas o `orchestrator:automation-start` falha, por exemplo com `stream_socket_client(): Unable to connect to tcp://:`.
+
+Por isso, sempre que grava o crontab, a lib salva as variáveis do processo consumer (iniciado pelo supervisor, que as herdou do container) em `/etc/orchestrator.env` (permissão 0600) e adiciona ao topo do crontab:
+
+~~~sh
+SHELL=/bin/bash
+BASH_ENV=/etc/orchestrator.env
+~~~
+
+Assim todo job carrega as variáveis antes de executar. Requer `bash` na imagem. Para usar outro caminho, adicione `'cronEnvFile' => '/caminho/arquivo.env'` ao config **orchestrator.php**. Se o crontab já tiver uma linha `BASH_ENV=`, a lib a mantém.
+
 ## Em caso de erros
 * Reveja os passos para ter certeza que não ficou nada para traz.
 * Consulte os arquivos de logs
